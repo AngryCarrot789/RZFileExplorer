@@ -11,9 +11,9 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:IconTextPairControl}">
-                    <Grid>
-                        <Image Source="{TemplateBinding ImageSource}" Width="20" Height="20"/>
-                        <Label Height="20" VerticalContentAlignment="Center" Padding="2 0" Margin="3 0 0 0">
+                    <Grid HorizontalAlignment="Left">
+                        <Image Source="{TemplateBinding ImageSource}" Width="20" Height="20" HorizontalAlignment="Left"/>
+                        <Label VerticalContentAlignment="Center" Height="20" Padding="2 0" Margin="23 0 0 0" HorizontalAlignment="Left">
                             <TextBlock Text="{TemplateBinding Text}" VerticalAlignment="Center"/>
                         </Label>
                     </Grid>

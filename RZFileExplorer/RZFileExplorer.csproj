@@ -79,6 +79,9 @@
     <Compile Include="Files\DriveItemViewModel.cs" />
     <Compile Include="Files\FileItemViewModel.cs" />
     <Compile Include="Files\FileSizes\DirectorySizeCalculatorControl.cs" />
+    <Compile Include="Icons\FileIconService.cs" />
+    <Compile Include="Icons\IconCache.cs" />
+    <Compile Include="Icons\IconService.cs" />
     <Compile Include="Themes\Controls.xaml.cs">
       <DependentUpon>Controls.xaml</DependentUpon>
     </Compile>

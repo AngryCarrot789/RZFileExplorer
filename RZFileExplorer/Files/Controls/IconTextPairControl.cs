@@ -1,7 +1,7 @@
-using System.Runtime.Remoting.Messaging;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using RZFileExplorer.Icons;
 
 namespace RZFileExplorer.Files.Controls {
     public class IconTextPairControl : Control {
@@ -19,6 +19,22 @@ namespace RZFileExplorer.Files.Controls {
                 typeof(IconTextPairControl),
                 new FrameworkPropertyMetadata("", FrameworkPropertyMetadataOptions.None, (d, e) => { }, (a, b) => b == null ? "" : b.ToString()));
 
+        public static readonly DependencyProperty TargetFilePathProperty =
+            DependencyProperty.Register(
+                "TargetFilePath",
+                typeof(string),
+                typeof(IconTextPairControl),
+                new PropertyMetadata(null, OnTargetFilePathPropertyChanged));
+
+        private static void OnTargetFilePathPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
+            ((IconTextPairControl) d).OnTargetFileChanged();
+        }
+
+        public string TargetFilePath {
+            get => (string) GetValue(TargetFilePathProperty);
+            set => SetValue(TargetFilePathProperty, value);
+        }
+
         public ImageSource ImageSource {
             get => (ImageSource) GetValue(ImageSourceProperty);
             set => SetValue(ImageSourceProperty, value);
@@ -27,6 +43,10 @@ namespace RZFileExplorer.Files.Controls {
         public string Text {
             get => (string) GetValue(TextProperty);
             set => SetValue(TextProperty, value);
+        }
+
+        public void OnTargetFileChanged() {
+            FileIconService.Instance.EnqueueForIconFetch(this);
         }
     }
 }

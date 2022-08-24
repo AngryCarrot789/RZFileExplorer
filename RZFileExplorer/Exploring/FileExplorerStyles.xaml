@@ -34,13 +34,18 @@
                             </ListBox.Resources>
                         </ListBox>
                         <ListView ItemsSource="{TemplateBinding ItemsSource}" x:Name="PART_FileList" Visibility="Collapsed">
+                            <ListView.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <VirtualizingStackPanel IsVirtualizing="True" VirtualizationMode="Recycling"/>
+                                </ItemsPanelTemplate>
+                            </ListView.ItemsPanel>
                             <ListView.View>
                                 <GridView>
                                     <GridView.Columns>
                                         <GridViewColumn Header="File Name" Width="400">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <controls:IconTextPairControl d:DataContext="{d:DesignInstance files:FileItemViewModel}" Text="{Binding FilePath}" ImageSource="{Binding FilePath, Converter={StaticResource FilePathIconConverter}}">
+                                                    <controls:IconTextPairControl d:DataContext="{d:DesignInstance files:FileItemViewModel}" Text="{Binding FileName, Mode=OneTime}" TargetFilePath="{Binding FilePath}">
                                                         <controls:IconTextPairControl.InputBindings>
                                                             <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding NavigateCommand}"/>
                                                         </controls:IconTextPairControl.InputBindings>
@@ -58,15 +63,15 @@
                                         <GridViewColumn Header="Size" Width="150">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <ContentPresenter Content="{Binding}" Width="100" HorizontalAlignment="Center">
+                                                    <ContentPresenter Content="{Binding}" MinWidth="100" HorizontalAlignment="Left">
                                                         <ContentPresenter.Resources>
                                                             <DataTemplate DataType="{x:Type files:FileItemViewModel}">
                                                                 <TextBlock Text="{Binding FileSize, UpdateSourceTrigger=PropertyChanged}"/>
                                                             </DataTemplate>
                                                             <DataTemplate DataType="{x:Type files:DirectoryItemViewModel}">
-                                                                <Button Command="{Binding CalculateSizeCommand, Mode=OneTime}" Background="Transparent" BorderBrush="Transparent">
+                                                                <Button Command="{Binding PromptCalculateSizeCommand, Mode=OneTime}" Background="Transparent" BorderBrush="Transparent" Focusable="False">
                                                                     <Button.Content>
-                                                                        <TextBlock Opacity="0.8" Text="{Binding CalculatedSize, Converter={StaticResource DirectorySizeConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                                                                        <TextBlock Opacity="0.9" Text="{Binding CalculatedSize, Converter={StaticResource DirectorySizeConverter}, UpdateSourceTrigger=PropertyChanged}"/>
                                                                     </Button.Content>
                                                                 </Button>
                                                             </DataTemplate>

@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Windows;
 using System.Windows.Input;
 using REghZy.MVVM.Commands;
 using REghZy.MVVM.ViewModels;
@@ -18,11 +19,28 @@ namespace RZFileExplorer.Files {
         public abstract bool IsDrive { get; }
         public abstract bool Exists { get; }
 
-        private string filePath;
+        public bool IgnoreRenameOnFileNameChanged { get; set; }
 
+        private string filePath;
         public string FilePath {
             get => this.filePath;
-            set => RaisePropertyChanged(ref this.filePath, value);
+            set {
+                RaisePropertyChanged(ref this.filePath, value);
+                this.IgnoreRenameOnFileNameChanged = true;
+                this.FileName = Path.GetFileName(value);
+                this.IgnoreRenameOnFileNameChanged = false;
+            }
+        }
+
+        private string fileName;
+        public string FileName {
+            get => this.fileName;
+            set {
+                RaisePropertyChanged(ref this.fileName, value);
+                if (!this.IgnoreRenameOnFileNameChanged) {
+                    DoRename();
+                }
+            }
         }
 
         public ICommand NavigateCommand { get; }
@@ -43,5 +61,9 @@ namespace RZFileExplorer.Files {
         }
 
         public abstract void Update();
+
+        public virtual void DoRename() {
+            MessageBox.Show("Rename not implemented yet", "Rename", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+        }
     }
 }
