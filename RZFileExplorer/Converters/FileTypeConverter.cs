@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 using RZFileExplorer.Files;
+using RZFileExplorer.Icons;
 
 namespace RZFileExplorer.Converters {
     [ValueConversion(typeof(BaseFileItemViewModel), typeof(string))]
@@ -14,7 +15,13 @@ namespace RZFileExplorer.Converters {
 
             if (value is BaseFileItemViewModel file) {
                 if (file.IsFile) {
-                    return "File";
+                    string description = ShellUtils.GetFileTypeDescription(file.FilePath);
+                    if (description == null) {
+                        return file;
+                    }
+                    else {
+                        return description;
+                    }
                 }
                 else if (file.IsDirectory) {
                     return "Directory";

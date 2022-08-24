@@ -32,7 +32,7 @@ namespace RZFileExplorer.Files {
         public override void Update() {
             DirectoryInfo info = new DirectoryInfo(this.FilePath);
             if (info.Exists) {
-
+                this.IsHidden = (info.Attributes & FileAttributes.Hidden) != 0;
             }
         }
 

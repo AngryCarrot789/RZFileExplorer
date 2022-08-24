@@ -43,6 +43,12 @@ namespace RZFileExplorer.Files {
             }
         }
 
+        private bool isHidden;
+        public bool IsHidden {
+            get => this.isHidden;
+            set => RaisePropertyChanged(ref this.isHidden, value);
+        }
+
         public ICommand NavigateCommand { get; }
 
         protected BaseFileItemViewModel(FileExplorerViewModel fileExplorer, string path = null) {

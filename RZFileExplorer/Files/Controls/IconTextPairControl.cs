@@ -4,7 +4,7 @@ using System.Windows.Media;
 using RZFileExplorer.Icons;
 
 namespace RZFileExplorer.Files.Controls {
-    public class IconTextPairControl : Control {
+    public class IconTextPairControl : Control, IImageable {
         public static readonly DependencyProperty ImageSourceProperty =
             DependencyProperty.Register(
                 "ImageSource",
@@ -26,6 +26,18 @@ namespace RZFileExplorer.Files.Controls {
                 typeof(IconTextPairControl),
                 new PropertyMetadata(null, OnTargetFilePathPropertyChanged));
 
+        public static readonly DependencyProperty IconTypeProperty =
+            DependencyProperty.Register(
+                "IconType",
+                typeof(IconType),
+                typeof(IconTextPairControl),
+                new PropertyMetadata(IconType.Normal));
+
+        public IconType IconType {
+            get => (IconType) GetValue(IconTypeProperty);
+            set => SetValue(IconTypeProperty, value);
+        }
+
         private static void OnTargetFilePathPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             ((IconTextPairControl) d).OnTargetFileChanged();
         }
@@ -45,8 +57,26 @@ namespace RZFileExplorer.Files.Controls {
             set => SetValue(TextProperty, value);
         }
 
+        private bool queuedLoadForXamlLoad;
+
+        public IconTextPairControl() {
+            Loaded += OnLoaded;
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs e) {
+            if (this.queuedLoadForXamlLoad) {
+                this.queuedLoadForXamlLoad = false;
+                OnTargetFileChanged();
+            }
+        }
+
         public void OnTargetFileChanged() {
-            FileIconService.Instance.EnqueueForIconFetch(this);
+            if (this.IsLoaded) {
+                FileIconService.Instance.EnqueueForIconResolution(this.TargetFilePath, this, false, false, this.IconType);
+            }
+            else {
+                this.queuedLoadForXamlLoad = true;
+            }
         }
     }
 }

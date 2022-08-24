@@ -9,6 +9,18 @@ namespace RZFileExplorer.Files {
 
         public sealed override bool Exists     => ExistsAsDirectory();
 
+        private string formatType;
+        public string FormatType {
+            get => this.formatType;
+            set => RaisePropertyChanged(ref this.formatType, value);
+        }
+
+        private string volumeLabel;
+        public string VolumeLabel {
+            get => this.volumeLabel;
+            set => RaisePropertyChanged(ref this.volumeLabel, value);
+        }
+
         private long totalSpace;
         public long TotalSpace {
             get => this.totalSpace;
@@ -23,8 +35,9 @@ namespace RZFileExplorer.Files {
 
         public long RemainingSpace => this.totalSpace - this.usedSpace;
 
-        public DriveItemViewModel(FileExplorerViewModel fileExplorer, string path) : base(fileExplorer, path) {
-
+        public DriveItemViewModel(FileExplorerViewModel fileExplorer, DriveInfo info) : base(fileExplorer, info.Name) {
+            this.VolumeLabel = info.VolumeLabel;
+            this.FormatType = info.DriveFormat; // NTFS most of the time; for drives at least
         }
 
         public override void Update() {

@@ -63,13 +63,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converters\ConverterChain.cs" />
     <Compile Include="Converters\DirectoryFileSizeConverter.cs" />
     <Compile Include="Converters\FilePathToIconConverter.cs" />
+    <Compile Include="Converters\FileSizeConverter.cs" />
     <Compile Include="Converters\FileTypeConverter.cs" />
     <Compile Include="Exploring\ExplorerMode.cs" />
     <Compile Include="Exploring\FileExplorerControl.cs" />
     <Compile Include="Files\BaseDirectoryItemViewModel.cs" />
     <Compile Include="Files\BaseFileItemViewModel.cs" />
+    <Compile Include="Files\Controls\FileIconImageControl.cs" />
     <Compile Include="Files\Controls\BaseFileItemControl.cs" />
     <Compile Include="Files\Controls\DirectoryItemControl.cs" />
     <Compile Include="Files\Controls\DriveItemControl.cs" />
@@ -79,9 +82,12 @@
     <Compile Include="Files\DriveItemViewModel.cs" />
     <Compile Include="Files\FileItemViewModel.cs" />
     <Compile Include="Files\FileSizes\DirectorySizeCalculatorControl.cs" />
+    <Compile Include="Files\IconType.cs" />
     <Compile Include="Icons\FileIconService.cs" />
     <Compile Include="Icons\IconCache.cs" />
-    <Compile Include="Icons\IconService.cs" />
+    <Compile Include="Icons\IImageable.cs" />
+    <Compile Include="Icons\ShellEx.cs" />
+    <Compile Include="Icons\ShellUtils.cs" />
     <Compile Include="Themes\Controls.xaml.cs">
       <DependentUpon>Controls.xaml</DependentUpon>
     </Compile>
@@ -166,8 +172,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Exploring\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

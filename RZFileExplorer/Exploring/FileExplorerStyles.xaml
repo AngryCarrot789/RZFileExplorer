@@ -6,16 +6,31 @@
                     xmlns:exploring="clr-namespace:RZFileExplorer.Exploring"
                     xmlns:files="clr-namespace:RZFileExplorer.Files"
                     xmlns:controls="clr-namespace:RZFileExplorer.Files.Controls"
-                    xmlns:converters="clr-namespace:RZFileExplorer.Converters">
+                    xmlns:converters="clr-namespace:RZFileExplorer.Converters"
+                    xmlns:fileSizes="clr-namespace:RZFileExplorer.Files.FileSizes"
+                    xmlns:viewModels="clr-namespace:RZFileExplorer.ViewModels">
     <converters:FileTypeConverter x:Key="FileTypeConverter"/>
     <converters:FilePathToIconConverter x:Key="FilePathIconConverter"/>
     <converters:DirectoryFileSizeConverter x:Key="DirectorySizeConverter"/>
+    <converters:FileSizeConverter x:Key="FileSizeConverter"/>
+
+    <converters:ConverterChain x:Key="DirectoryFileSizeConverter">
+        <converters:ConverterChain.Converters>
+            <StaticResource ResourceKey="DirectorySizeConverter"/>
+            <StaticResource ResourceKey="FileSizeConverter"/>
+        </converters:ConverterChain.Converters>
+    </converters:ConverterChain>
+
+    <Style x:Key="FileExplorerListViewItem" TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource {x:Type ListViewItem}}">
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    </Style>
+
     <Style TargetType="{x:Type exploring:FileExplorerControl}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type exploring:FileExplorerControl}">
-                    <Grid>
-                        <ListBox ItemsSource="{TemplateBinding ItemsSource}" x:Name="PART_DriveList" Visibility="Collapsed">
+                    <Grid d:DataContext="{d:DesignInstance viewModels:FileExplorerViewModel}">
+                        <ListBox ItemsSource="{TemplateBinding ItemsSource}" x:Name="PART_DriveList" Visibility="Collapsed" Background="{TemplateBinding Background}" BorderThickness="{TemplateBinding BorderThickness}" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto">
                             <ListBox.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <WrapPanel Orientation="Horizontal"/>
@@ -33,19 +48,24 @@
                                 </DataTemplate>
                             </ListBox.Resources>
                         </ListBox>
-                        <ListView ItemsSource="{TemplateBinding ItemsSource}" x:Name="PART_FileList" Visibility="Collapsed">
+                        <ListView ItemsSource="{TemplateBinding ItemsSource}" x:Name="PART_FileList" Visibility="Visible" Background="{TemplateBinding Background}" BorderThickness="{TemplateBinding BorderThickness}">
                             <ListView.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <VirtualizingStackPanel IsVirtualizing="True" VirtualizationMode="Recycling"/>
                                 </ItemsPanelTemplate>
                             </ListView.ItemsPanel>
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource {x:Type ListViewItem}}">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                </Style>
+                            </ListView.ItemContainerStyle>
                             <ListView.View>
                                 <GridView>
                                     <GridView.Columns>
                                         <GridViewColumn Header="File Name" Width="400">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <controls:IconTextPairControl d:DataContext="{d:DesignInstance files:FileItemViewModel}" Text="{Binding FileName, Mode=OneTime}" TargetFilePath="{Binding FilePath}">
+                                                    <controls:IconTextPairControl d:DataContext="{d:DesignInstance files:FileItemViewModel}" Text="{Binding FileName, Mode=OneTime}" TargetFilePath="{Binding FilePath}" HorizontalAlignment="Stretch" Background="Transparent">
                                                         <controls:IconTextPairControl.InputBindings>
                                                             <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding NavigateCommand}"/>
                                                         </controls:IconTextPairControl.InputBindings>
@@ -53,27 +73,23 @@
                                                 </DataTemplate>
                                             </GridViewColumn.CellTemplate>
                                         </GridViewColumn>
-                                        <GridViewColumn Header="Type" Width="150">
+                                        <GridViewColumn Header="Type" Width="120">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <TextBlock Text="{Binding Converter={StaticResource FileTypeConverter}}"/>
                                                 </DataTemplate>
                                             </GridViewColumn.CellTemplate>
                                         </GridViewColumn>
-                                        <GridViewColumn Header="Size" Width="150">
+                                        <GridViewColumn Header="Size" Width="125">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <ContentPresenter Content="{Binding}" MinWidth="100" HorizontalAlignment="Left">
+                                                    <ContentPresenter Content="{Binding}" HorizontalAlignment="Right">
                                                         <ContentPresenter.Resources>
                                                             <DataTemplate DataType="{x:Type files:FileItemViewModel}">
-                                                                <TextBlock Text="{Binding FileSize, UpdateSourceTrigger=PropertyChanged}"/>
+                                                                <TextBlock FontFamily="Consolas" Text="{Binding FileSize, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource FileSizeConverter}}" TextAlignment="Right" HorizontalAlignment="Right"/>
                                                             </DataTemplate>
                                                             <DataTemplate DataType="{x:Type files:DirectoryItemViewModel}">
-                                                                <Button Command="{Binding PromptCalculateSizeCommand, Mode=OneTime}" Background="Transparent" BorderBrush="Transparent" Focusable="False">
-                                                                    <Button.Content>
-                                                                        <TextBlock Opacity="0.9" Text="{Binding CalculatedSize, Converter={StaticResource DirectorySizeConverter}, UpdateSourceTrigger=PropertyChanged}"/>
-                                                                    </Button.Content>
-                                                                </Button>
+                                                                <fileSizes:DirectorySizeCalculatorControl DataContext="{Binding}"/>
                                                             </DataTemplate>
                                                         </ContentPresenter.Resources>
                                                     </ContentPresenter>

@@ -31,6 +31,7 @@ namespace RZFileExplorer.Files {
             FileInfo info = new FileInfo(this.FilePath);
             if (info.Exists) {
                 this.FileSize = info.Length;
+                this.IsHidden = (info.Attributes & FileAttributes.Hidden) != 0;
             }
         }
     }

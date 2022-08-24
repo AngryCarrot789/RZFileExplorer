@@ -9,22 +9,45 @@
         xmlns:controls="clr-namespace:RZFileExplorer.Files.Controls"
         xmlns:files="clr-namespace:RZFileExplorer.Files"
         xmlns:exploring="clr-namespace:RZFileExplorer.Exploring"
-        Title="MainWindow" Height="720" Width="1280"
+        Title="MainWindow" Height="700" Width="1240"
         d:DataContext="{d:DesignInstance viewModels:FileExplorerViewModel}"
-        Style="{DynamicResource CustomWindowStyle}">
+        Style="{DynamicResource CustomWindowStyle}" 
+        Background="{DynamicResource AREghZyBrush.Primary.1.Background.Static}" BorderBrush="{DynamicResource AREghZyBrush.Primary.1.Border.Static}">
     <Window.InputBindings>
         <MouseBinding MouseAction="MiddleClick"/>
     </Window.InputBindings>
-    <Grid Margin="5">
-        <Button Command="{Binding History.GoBackCommand}" Content="Back" HorizontalAlignment="Left" Height="23" VerticalAlignment="Top" Width="68"/>
-        <Button Command="{Binding History.GoForwardCommand}" Content="Forward" HorizontalAlignment="Left" Height="23" VerticalAlignment="Top" Width="68" Margin="73,0,0,0"/>
-        <TextBox Text="{Binding InputPath, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Padding="2" Height="23" VerticalContentAlignment="Center" Margin="146,0,0,0">
-            <TextBox.InputBindings>
-                <KeyBinding Key="Enter" Command="{Binding NavigateToInputCommand}"/>
-            </TextBox.InputBindings>
-        </TextBox>
+    <Grid>
+        <Grid Height="100" VerticalAlignment="Top">
 
-        <exploring:FileExplorerControl ItemsSource="{Binding Files}" ExplorerMode="{Binding ExplorerMode, Mode=TwoWay}" Margin="0,28,0,0"/>
+        </Grid>
+        <Border Margin="0,100,0,0" Background="{DynamicResource AREghZyBrush.Deep.3.Background.Static}" BorderBrush="{DynamicResource AREghZyBrush.Primary.1.Border.Static}" BorderThickness="0 1 0 0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="143"/>
+                    <ColumnDefinition Width="4"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid Height="23" VerticalAlignment="Top" Margin="3,3,3,0" Grid.ColumnSpan="3">
+                    <Button Command="{Binding History.GoBackCommand}" Content="←" HorizontalAlignment="Left" Width="25"/>
+                    <Button Command="{Binding History.GoForwardCommand}" Content="→" HorizontalAlignment="Left" Width="25" Margin="29,0,0,0"/>
+                    <TextBox Text="{Binding InputPath, UpdateSourceTrigger=PropertyChanged}" Padding="2" VerticalContentAlignment="Center" Margin="58,0,0,0" Background="{DynamicResource AREghZyBrush.Deep.2.Background.Static}">
+                        <TextBox.InputBindings>
+                            <KeyBinding Key="Enter" Command="{Binding NavigateToInputCommand}"/>
+                        </TextBox.InputBindings>
+                    </TextBox>
+                </Grid>
+                <Grid Margin="0,29,0,0">
+                    <ListBox BorderThickness="0 1 1 0" BorderBrush="{DynamicResource AREghZyBrush.Primary.1.Border.Static}" Background="{DynamicResource AREghZyBrush.Deep.3.Background.Static}">
+                        
+                    </ListBox>
+                </Grid>
+                <Grid Margin="0,29,0,0" Grid.Column="2">
+                    <exploring:FileExplorerControl BorderThickness="1 1 0 0" ItemsSource="{Binding Files}" ExplorerMode="{Binding ExplorerMode, UpdateSourceTrigger=PropertyChanged}" Background="{DynamicResource AREghZyBrush.Deep.2.Background.Static}"/>
+                </Grid>
+                <GridSplitter VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Column="1" Background="Transparent" Margin="0,29,0,0"/>
+            </Grid>
+        </Border>
+
 
         <!--
         <ListBox ItemsSource="{Binding Files}" Margin="0,28,0,0" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling">

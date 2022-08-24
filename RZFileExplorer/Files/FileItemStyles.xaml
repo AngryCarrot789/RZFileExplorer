@@ -5,18 +5,55 @@
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                     xmlns:controls="clr-namespace:RZFileExplorer.Files.Controls"
                     xmlns:fileSizes="clr-namespace:RZFileExplorer.Files.FileSizes"
+                    xmlns:converters="clr-namespace:RZFileExplorer.Converters"
                     mc:Ignorable="d">
+
+    <converters:FileSizeConverter x:Key="FileSizeConverter"/>
+
     <Style TargetType="{x:Type controls:IconTextPairControl}">
         <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Template">
+        <Setter Property="IconType" Value="Small"/>
+        <Setter Property="Template" d:DataContext="{d:DesignInstance files:BaseFileItemViewModel}">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:IconTextPairControl}">
-                    <Grid HorizontalAlignment="Left">
-                        <Image Source="{TemplateBinding ImageSource}" Width="20" Height="20" HorizontalAlignment="Left"/>
-                        <Label VerticalContentAlignment="Center" Height="20" Padding="2 0" Margin="23 0 0 0" HorizontalAlignment="Left">
+                    <Grid HorizontalAlignment="Left" Height="16">
+                        <Image Source="{TemplateBinding ImageSource}" VerticalAlignment="Stretch" Width="18" HorizontalAlignment="Left"/>
+                        <Label VerticalAlignment="Stretch" VerticalContentAlignment="Center" Padding="2 0" Margin="23 0 0 0" HorizontalAlignment="Left">
                             <TextBlock Text="{TemplateBinding Text}" VerticalAlignment="Center"/>
                         </Label>
                     </Grid>
+                    <ControlTemplate.Triggers>
+                        <DataTrigger Binding="{Binding IsHidden}" Value="True">
+                            <Setter Property="Opacity" Value="0.5"/>
+                        </DataTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type fileSizes:DirectorySizeCalculatorControl}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Template" d:DataContext="{d:DesignInstance files:DirectoryItemViewModel}">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type fileSizes:DirectorySizeCalculatorControl}">
+                    <Grid>
+                        <Grid.InputBindings>
+                            <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding PromptCalculateSizeCommand, Mode=OneTime}"/>
+                        </Grid.InputBindings>
+                        <TextBlock TextAlignment="Right" HorizontalAlignment="Right" x:Name="PART_calculatedBox" FontFamily="Consolas" Text="{Binding CalculatedSize, Converter={StaticResource FileSizeConverter}, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBlock TextAlignment="Center" HorizontalAlignment="Center" x:Name="PART_showToCalculate" Opacity="0.5" Text="Calculate" ToolTip="Double click to calculate the directory's size (shows prompt)"/>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <DataTrigger Binding="{Binding HasCalculatedSize, UpdateSourceTrigger=PropertyChanged}" Value="False">
+                            <Setter Property="Visibility" TargetName="PART_calculatedBox" Value="Hidden"/>
+                            <Setter Property="Visibility" TargetName="PART_showToCalculate" Value="Visible"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding HasCalculatedSize, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                            <Setter Property="Visibility" TargetName="PART_calculatedBox" Value="Visible"/>
+                            <Setter Property="Visibility" TargetName="PART_showToCalculate" Value="Hidden"/>
+                        </DataTrigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -53,10 +90,18 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:DriveItemControl}">
-                    <StackPanel Background="Transparent" d:DataContext="{d:DesignInstance files:DriveItemViewModel}" MinWidth="200" Height="40">
-                        <TextBlock Text="{Binding FilePath, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="2"/>
-                        <ProgressBar Minimum="0" Maximum="{Binding TotalSpace, UpdateSourceTrigger=PropertyChanged}" Value="{Binding UsedSpace, UpdateSourceTrigger=PropertyChanged}" Height="20"/>
-                    </StackPanel>
+                    <Grid Background="Transparent" d:DataContext="{d:DesignInstance files:DriveItemViewModel}" MinWidth="240" Height="50">
+                        <controls:FileIconImageControl IconType="Large" TargetFilePath="{Binding FilePath}" Height="50" Width="50" HorizontalAlignment="Left"/>
+                        <StackPanel Margin="50 0 0 0">
+                            <TextBlock Text="{Binding FilePath, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="2"/>
+                            <ProgressBar Minimum="0" Maximum="{Binding TotalSpace, UpdateSourceTrigger=PropertyChanged}" Value="{Binding UsedSpace, UpdateSourceTrigger=PropertyChanged}" Height="12"/>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding RemainingSpace, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource FileSizeConverter}}" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="2 2 1 2"/>
+                                <TextBlock Text=" free of " VerticalAlignment="Top" HorizontalAlignment="Left" Padding="0 2"/>
+                                <TextBlock Text="{Binding TotalSpace, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource FileSizeConverter}}" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="1 2 2 2"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

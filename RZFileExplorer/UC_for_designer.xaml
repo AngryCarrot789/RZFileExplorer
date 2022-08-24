@@ -7,11 +7,19 @@
              xmlns:files="clr-namespace:RZFileExplorer.Files"
              xmlns:controls="clr-namespace:RZFileExplorer.Files.Controls"
              xmlns:converters="clr-namespace:RZFileExplorer.Converters" 
-             xmlns:viewmodels="clr-namespace:RZFileExplorer.ViewModels" 
+             xmlns:viewmodels="clr-namespace:RZFileExplorer.ViewModels" xmlns:fileSizes="clr-namespace:RZFileExplorer.Files.FileSizes"
              d:DataContext="{d:DesignInstance Type=viewmodels:FileExplorerViewModel}"
              mc:Ignorable="d" d:DesignWidth="800" Height="170">
-    <StackPanel d:DataContext="{d:DesignInstance files:DriveItemViewModel}" MinWidth="200">
-        <TextBlock Text="{Binding FilePath, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="2"/>
-        <ProgressBar Minimum="0" Maximum="{Binding TotalSpace, UpdateSourceTrigger=PropertyChanged}" Value="{Binding UsedSpace, UpdateSourceTrigger=PropertyChanged}" Height="20"/>
-    </StackPanel>
+    <Grid Background="Transparent" d:DataContext="{d:DesignInstance files:DriveItemViewModel}" MinWidth="200" Height="58">
+        <controls:FileIconImageControl IconType="Large" TargetFilePath="{Binding FilePath}" Height="55" Width="55" HorizontalAlignment="Left"/>
+        <StackPanel Margin="55 0 0 0">
+            <TextBlock Text="{Binding FilePath, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="2"/>
+            <ProgressBar Minimum="0" Maximum="{Binding TotalSpace, UpdateSourceTrigger=PropertyChanged}" Value="{Binding UsedSpace, UpdateSourceTrigger=PropertyChanged}" Height="18"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding RemainingSpace, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="2 2 1 2"/>
+                <TextBlock Text=" free of " VerticalAlignment="Top" HorizontalAlignment="Left" Padding="0 2"/>
+                <TextBlock Text="{Binding TotalSpace, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="1 2 2 2"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
 </UserControl>

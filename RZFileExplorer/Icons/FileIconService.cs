@@ -16,29 +16,31 @@ using RZFileExplorer.Files.Controls;
 
 namespace RZFileExplorer.Icons {
     public class FileIconService {
-        private struct PathControlPair {
+        private readonly struct QueuedIconResolution {
             public readonly string path;
-            public readonly IconTextPairControl control;
+            public readonly IImageable imageable;
+            public readonly IconType iconType;
 
-            public PathControlPair(IconTextPairControl control) {
-                this.control = control;
-                this.path = control.TargetFilePath;
+            public QueuedIconResolution(string path, IImageable imageable, IconType iconType) {
+                this.path = path;
+                this.imageable = imageable;
+                this.iconType = iconType;
             }
         }
 
-        private struct ControlImagePair {
-            public readonly IconTextPairControl control;
+        private readonly struct PendingIconDelivery {
+            public readonly IImageable imageable;
             public readonly string path;
             public readonly ImageSource image;
 
-            public ControlImagePair(IconTextPairControl control, string path, ImageSource image) {
-                this.control = control;
+            public PendingIconDelivery(string path, IImageable imageable, ImageSource image) {
                 this.path = path;
+                this.imageable = imageable;
                 this.image = image;
             }
 
-            public void Set() {
-                this.control.ImageSource = this.image;
+            public void SetImage() {
+                this.imageable.ImageSource = this.image;
             }
         }
 
@@ -46,9 +48,9 @@ namespace RZFileExplorer.Icons {
 
         private readonly Thread fileThread;
         private readonly Thread directoryThread;
-        private readonly ConcurrentQueue<PathControlPair> fileQueue;
-        private readonly ConcurrentQueue<PathControlPair> directoryQueue;
-        private readonly ConcurrentQueue<ControlImagePair> updateQueue;
+        private readonly ConcurrentQueue<QueuedIconResolution> fileQueue;
+        private readonly ConcurrentQueue<QueuedIconResolution> directoryQueue;
+        private readonly ConcurrentQueue<PendingIconDelivery> updateQueue;
 
         private readonly IconCache cache;
 
@@ -71,9 +73,9 @@ namespace RZFileExplorer.Icons {
         }
 
         public FileIconService() {
-            this.fileQueue = new ConcurrentQueue<PathControlPair>();
-            this.directoryQueue = new ConcurrentQueue<PathControlPair>();
-            this.updateQueue = new ConcurrentQueue<ControlImagePair>();
+            this.fileQueue = new ConcurrentQueue<QueuedIconResolution>();
+            this.directoryQueue = new ConcurrentQueue<QueuedIconResolution>();
+            this.updateQueue = new ConcurrentQueue<PendingIconDelivery>();
             this.cache = new IconCache();
 
             this.canFileThreadRun = true;
@@ -92,8 +94,8 @@ namespace RZFileExplorer.Icons {
                     if (size > 0) {
                         Application.Current.Dispatcher.Invoke(() => {
                             for (int i = 0; i < size; i++) {
-                                if (this.updateQueue.TryDequeue(out ControlImagePair pair)) {
-                                    pair.Set();
+                                if (this.updateQueue.TryDequeue(out PendingIconDelivery pair)) {
+                                    pair.SetImage();
                                     this.cache.PutImage(pair.path, pair.image);
                                 }
                                 else {
@@ -106,6 +108,7 @@ namespace RZFileExplorer.Icons {
                     await Task.Delay(50);
                 }
             });
+
             Task.Run(async () => {
                 while (this.canUpdateTaskRun) {
                     this.cache.Tick();
@@ -124,10 +127,10 @@ namespace RZFileExplorer.Icons {
                 if (count > 0) {
                     Application.Current.Dispatcher.Invoke(() => {
                         for (int i = 0; i < count; i++) {
-                            if (this.fileQueue.TryDequeue(out PathControlPair control)) {
+                            if (this.fileQueue.TryDequeue(out QueuedIconResolution control)) {
                                 string path = control.path;
                                 if (File.Exists(path)) {
-                                    this.updateQueue.Enqueue(new ControlImagePair(control.control, path, IconService.GetFileIconAsBitmapSource(path, true, false)));
+                                    this.updateQueue.Enqueue(new PendingIconDelivery(path, control.imageable, ShellUtils.GetFileIconAsBitmapSource(path, control.iconType, false)));
                                 }
                             }
                         }
@@ -144,10 +147,18 @@ namespace RZFileExplorer.Icons {
                 if (count > 0) {
                     Application.Current.Dispatcher.Invoke(() => {
                         for (int i = 0; i < count; i++) {
-                            if (this.directoryQueue.TryDequeue(out PathControlPair control)) {
+                            if (this.directoryQueue.TryDequeue(out QueuedIconResolution control)) {
                                 string path = control.path;
                                 if (Directory.Exists(path)) {
-                                    this.updateQueue.Enqueue(new ControlImagePair(control.control, path, IconService.GetFileIconAsBitmapSource(path, true, true)));
+                                    BitmapSource source;
+                                    if (control.iconType == IconType.Large) {
+                                        source = ShellEx.icon_of_path_large(path, false, true);
+                                    }
+                                    else {
+                                        source = ShellUtils.GetFileIconAsBitmapSource(path, control.iconType, true);
+                                    }
+
+                                    this.updateQueue.Enqueue(new PendingIconDelivery(path, control.imageable, source));
                                 }
                             }
                         }
@@ -158,25 +169,24 @@ namespace RZFileExplorer.Icons {
             }
         }
 
-        public void EnqueueForIconFetch(IconTextPairControl control, bool forceFile = false, bool forceDirectory = false) {
+        public void EnqueueForIconResolution(string path, IImageable control, bool forceFile = false, bool forceDirectory = false, IconType iconType = IconType.Normal) {
             if (forceFile || forceDirectory) {
                 if (forceFile) {
-                    this.fileQueue.Enqueue(new PathControlPair(control));
+                    this.fileQueue.Enqueue(new QueuedIconResolution(path, control, iconType));
                 }
                 else {
-                    this.directoryQueue.Enqueue(new PathControlPair(control));
+                    this.directoryQueue.Enqueue(new QueuedIconResolution(path, control, iconType));
                 }
             }
-            else {
-                string path = control.TargetFilePath;
+            else if (!string.IsNullOrEmpty(path)) {
                 if (this.cache.TryGetImage(path, out ImageSource source)) {
-                    this.updateQueue.Enqueue(new ControlImagePair(control, path, source));
+                    this.updateQueue.Enqueue(new PendingIconDelivery(path, control, source));
                 }
                 else if (File.Exists(path)) {
-                    this.fileQueue.Enqueue(new PathControlPair(control));
+                    this.fileQueue.Enqueue(new QueuedIconResolution(path, control, iconType));
                 }
                 else if (Directory.Exists(path)) {
-                    this.directoryQueue.Enqueue(new PathControlPair(control));
+                    this.directoryQueue.Enqueue(new QueuedIconResolution(path, control, iconType));
                 }
             }
         }

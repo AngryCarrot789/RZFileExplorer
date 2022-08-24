@@ -67,7 +67,7 @@ namespace RZFileExplorer.Icons {
             }
 
             long time = SystemTime();
-            long minimum = time - 5000;
+            long minimum = time - 10000;
             HashSet<string> remove = new HashSet<string>();
             foreach (KeyValuePair<string,TimedUsageImageSource> entry in this.pathMap) {
                 if (entry.Value.IsInvalid(minimum)) {

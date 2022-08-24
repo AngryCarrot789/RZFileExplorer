@@ -1,5 +1,7 @@
+using System.Windows.Media;
+
 namespace RZFileExplorer.Icons {
-    public class IImageable {
-        
+    public interface IImageable {
+        ImageSource ImageSource { get; set; }
     }
 }

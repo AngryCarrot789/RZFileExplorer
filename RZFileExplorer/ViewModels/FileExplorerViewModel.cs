@@ -97,7 +97,7 @@ namespace RZFileExplorer.ViewModels {
             this.Files.Clear();
             this.ExplorerMode = ExplorerMode.Wrap;
             foreach (DriveInfo info in DriveInfo.GetDrives()) {
-                this.Files.Add(new DriveItemViewModel(this, info.Name));
+                this.Files.Add(new DriveItemViewModel(this, info));
             }
         }
 
