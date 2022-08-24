@@ -8,7 +8,9 @@
                 <ResourceDictionary Source="Themes/SoftDark.xaml"/>
                 <ResourceDictionary Source="Themes/ControlColours.xaml"/>
                 <ResourceDictionary Source="Themes/Controls.xaml"/>
-                <ResourceDictionary Source="Files/FileItemStyles.xaml"/>
+                <ResourceDictionary Source="Themes/GlobalConverters.xaml"/>
+                <ResourceDictionary Source="Controls/ControlStyles.xaml"/>
+                <ResourceDictionary Source="Files/Controls/FileItemStyles.xaml"/>
                 <ResourceDictionary Source="Exploring/FileExplorerStyles.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

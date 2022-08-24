@@ -1,10 +1,9 @@
-using System.Drawing;
 using System.Windows;
-using System.Windows.Media;
+using RZFileExplorer.Files;
 using RZFileExplorer.Icons;
 using Image = System.Windows.Controls.Image;
 
-namespace RZFileExplorer.Files.Controls {
+namespace RZFileExplorer.Controls {
     public class FileIconImageControl : Image, IImageable {
         public static readonly DependencyProperty TargetFilePathProperty =
             DependencyProperty.Register(
@@ -33,24 +32,19 @@ namespace RZFileExplorer.Files.Controls {
             set => SetValue(IconTypeProperty, value);
         }
 
-        public ImageSource ImageSource {
-            get => this.Source;
-            set => this.Source = value;
-        }
-
         private static void OnTargetFilePathPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
             ((FileIconImageControl) d).OnTargetFileChanged();
         }
 
-        private bool queuedLoadForXamlLoad;
+        private bool triggerUpdateOnLoad;
 
         public FileIconImageControl() {
-            Loaded += OnLoaded;
+            this.Loaded += OnLoaded;
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e) {
-            if (this.queuedLoadForXamlLoad) {
-                this.queuedLoadForXamlLoad = false;
+            if (this.triggerUpdateOnLoad) {
+                this.triggerUpdateOnLoad = false;
                 OnTargetFileChanged();
             }
         }
@@ -58,9 +52,10 @@ namespace RZFileExplorer.Files.Controls {
         public void OnTargetFileChanged() {
             if (this.IsLoaded) {
                 FileIconService.Instance.EnqueueForIconResolution(this.TargetFilePath, this, false, false, this.IconType);
+                this.triggerUpdateOnLoad = false;
             }
             else {
-                this.queuedLoadForXamlLoad = true;
+                this.triggerUpdateOnLoad = true;
             }
         }
     }

@@ -1,4 +1,9 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:converters="clr-namespace:RZFileExplorer.Converters">
+    <converters:FileSizeConverter x:Key="FileSizeConverter"/>
+    <converters:FileTypeConverter x:Key="FileTypeConverter"/>
+    <converters:FilePathToIconConverter x:Key="FilePathToIconConverter"/>
+    <converters:DirectoryFileSizeConverter x:Key="DirectoryFileSizeConverter"/>
+    <converters:SystemIconToImageSourceConverter x:Key="SystemIconToImageSourceConverter"/>
 </ResourceDictionary>

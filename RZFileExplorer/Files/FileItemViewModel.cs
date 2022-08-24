@@ -1,6 +1,4 @@
 using System.IO;
-using System.Windows.Input;
-using REghZy.MVVM.Commands;
 using RZFileExplorer.ViewModels;
 
 namespace RZFileExplorer.Files {

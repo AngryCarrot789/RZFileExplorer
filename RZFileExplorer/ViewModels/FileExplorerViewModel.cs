@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Security;
 using System.Windows;
@@ -29,31 +30,35 @@ namespace RZFileExplorer.ViewModels {
         }
 
         private ExplorerMode explorerMode;
-
         public ExplorerMode ExplorerMode {
             get => this.explorerMode;
             set => RaisePropertyChanged(ref this.explorerMode, value);
         }
 
-        public ICommand NavigateToInputCommand { get; }
+        public ICommand NavigateToTopInputCommand { get; }
+
+        public ICommand RefreshCommand { get; }
 
         public ObservableCollection<BaseFileItemViewModel> Files { get; }
 
-        public RelayCommandParam<BaseFileItemViewModel> NavigateToPath { get; }
+        public RelayCommandParam<BaseFileItemViewModel> NavigateToItemCommand { get; }
+        public RelayCommandParam<string> NavigateToPathCommand { get; }
 
         public HistoryViewModel History { get; }
 
         public FileExplorerViewModel() {
             this.History = new HistoryViewModel(this);
             this.Files = new ObservableCollection<BaseFileItemViewModel>();
-            this.NavigateToPath = new RelayCommandParam<BaseFileItemViewModel>(this.Navigate);
-            this.NavigateToInputCommand = new RelayCommand(() => this.Navigate(this.InputPath));
-            NavigateToDriveList(false);
+            this.NavigateToItemCommand = new RelayCommandParam<BaseFileItemViewModel>(this.Navigate);
+            this.NavigateToPathCommand = new RelayCommandParam<string>((a) => this.Navigate(a));
+            this.NavigateToTopInputCommand = new RelayCommand(() => this.Navigate(this.InputPath));
+            this.RefreshCommand = new RelayCommand(this.RefreshCurrentFolder);
+            ClearListAndShowDrives(false);
         }
 
         public void Navigate(string input, bool appendHistory = true) {
             if (string.IsNullOrEmpty(input)) {
-                NavigateToDriveList(appendHistory);
+                ClearListAndShowDrives(appendHistory);
             }
             else if (Directory.Exists(input)) {
                 NavigateToDirectory(input, appendHistory);
@@ -79,7 +84,10 @@ namespace RZFileExplorer.ViewModels {
                 NavigateToDirectory(baseFile.FilePath);
             }
             else if (baseFile == null) {
-                NavigateToDriveList();
+                ClearListAndShowDrives();
+            }
+            else if (Debugger.IsAttached) {
+                MessageBox.Show("Unknown base file type: " + baseFile.GetType() + " -> " + baseFile);
             }
         }
 
@@ -91,7 +99,7 @@ namespace RZFileExplorer.ViewModels {
             this.CurrentDirectory = target;
         }
 
-        public void NavigateToDriveList(bool appendHistory = true) {
+        public void ClearListAndShowDrives(bool appendHistory = true) {
             SetHeaderPath(null);
             PreNavigation(null, appendHistory);
             this.Files.Clear();
@@ -141,11 +149,37 @@ namespace RZFileExplorer.ViewModels {
         }
 
         public void OpenFile(string path) {
-            MessageBox.Show($"You tried to open: {path}", "Open file", MessageBoxButton.OK, MessageBoxImage.Information);
+            if (File.Exists(path)) {
+                Process.Start(path);
+            }
+            else {
+                MessageBox.Show($"File does not exist: {path}", "Cannot open file", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            // MessageBox.Show($"You tried to open: {path}", "Open file", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         public void SetHeaderPath(string path) {
             this.InputPath = path;
+        }
+
+        public void RefreshCurrentFolder() {
+            if (Directory.Exists(this.CurrentDirectory)) {
+                this.Navigate(this.CurrentDirectory, false);
+            }
+            else if (this.CurrentDirectory != null) {
+                MessageBoxResult result = MessageBox.Show($"The current directory no longer exists. Would you like to find the nearest existing sub-directory?\n\n{this.CurrentDirectory}", "Directory no longer exists", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                if (result == MessageBoxResult.Yes) {
+                    string path = this.CurrentDirectory;
+                    while (path != null && !Directory.Exists(path)) {
+                        path = Path.GetDirectoryName(path); // gets the parent of the given file or directory
+                    }
+
+                    Navigate(path, true);
+                }
+            }
+            else {
+                ClearListAndShowDrives(false);
+            }
         }
     }
 }

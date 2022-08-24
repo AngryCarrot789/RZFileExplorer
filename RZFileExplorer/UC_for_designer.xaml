@@ -8,10 +8,11 @@
              xmlns:controls="clr-namespace:RZFileExplorer.Files.Controls"
              xmlns:converters="clr-namespace:RZFileExplorer.Converters" 
              xmlns:viewmodels="clr-namespace:RZFileExplorer.ViewModels" xmlns:fileSizes="clr-namespace:RZFileExplorer.Files.FileSizes"
+             xmlns:controls1="clr-namespace:RZFileExplorer.Controls"
              d:DataContext="{d:DesignInstance Type=viewmodels:FileExplorerViewModel}"
              mc:Ignorable="d" d:DesignWidth="800" Height="170">
     <Grid Background="Transparent" d:DataContext="{d:DesignInstance files:DriveItemViewModel}" MinWidth="200" Height="58">
-        <controls:FileIconImageControl IconType="Large" TargetFilePath="{Binding FilePath}" Height="55" Width="55" HorizontalAlignment="Left"/>
+        <controls1:FileIconImageControl IconType="Large" TargetFilePath="{Binding FilePath}" Height="55" Width="55" HorizontalAlignment="Left"/>
         <StackPanel Margin="55 0 0 0">
             <TextBlock Text="{Binding FilePath, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="2"/>
             <ProgressBar Minimum="0" Maximum="{Binding TotalSpace, UpdateSourceTrigger=PropertyChanged}" Value="{Binding UsedSpace, UpdateSourceTrigger=PropertyChanged}" Height="18"/>

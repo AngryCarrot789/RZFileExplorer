@@ -2,8 +2,8 @@ using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace RZFileExplorer.Files.Controls {
-    public class BaseFileItemControl : Control {
-        public BaseFileItemControl() {
+    public abstract class BaseFileItemControl : Control {
+        protected BaseFileItemControl() {
 
         }
 
@@ -16,4 +16,10 @@ namespace RZFileExplorer.Files.Controls {
             }
         }
     }
+
+    public class DriveWrapItemControl : BaseFileItemControl { }
+
+    public class DirectoryWrapItemControl : BaseFileItemControl { }
+
+    public class FileWrapItemControl : BaseFileItemControl { }
 }

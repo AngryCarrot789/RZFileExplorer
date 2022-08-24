@@ -63,26 +63,31 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\FileIconImageControl.cs" />
+    <Compile Include="Controls\IconTextPairControl.cs" />
+    <Compile Include="Controls\SystemIconImageControl.cs" />
     <Compile Include="Converters\ConverterChain.cs" />
     <Compile Include="Converters\DirectoryFileSizeConverter.cs" />
     <Compile Include="Converters\FilePathToIconConverter.cs" />
     <Compile Include="Converters\FileSizeConverter.cs" />
     <Compile Include="Converters\FileTypeConverter.cs" />
+    <Compile Include="Converters\SystemIconToImageSourceConverter.cs" />
     <Compile Include="Exploring\ExplorerMode.cs" />
     <Compile Include="Exploring\FileExplorerControl.cs" />
     <Compile Include="Files\BaseDirectoryItemViewModel.cs" />
     <Compile Include="Files\BaseFileItemViewModel.cs" />
-    <Compile Include="Files\Controls\FileIconImageControl.cs" />
     <Compile Include="Files\Controls\BaseFileItemControl.cs" />
-    <Compile Include="Files\Controls\DirectoryItemControl.cs" />
-    <Compile Include="Files\Controls\DriveItemControl.cs" />
-    <Compile Include="Files\Controls\FileItemControl.cs" />
-    <Compile Include="Files\Controls\IconTextPairControl.cs" />
     <Compile Include="Files\DirectoryItemViewModel.cs" />
     <Compile Include="Files\DriveItemViewModel.cs" />
     <Compile Include="Files\FileItemViewModel.cs" />
-    <Compile Include="Files\FileSizes\DirectorySizeCalculatorControl.cs" />
+    <Compile Include="Files\FileSizes\DirectorySizeControl.cs" />
     <Compile Include="Files\IconType.cs" />
+    <Compile Include="Files\QuickAccessing\QuickAccessItemControl.cs" />
+    <Compile Include="Files\QuickAccessing\QuickAccessItemViewModel.cs" />
+    <Compile Include="Files\QuickAccessing\QuickAccessListViewModel.cs" />
+    <Compile Include="Files\Selections\SelectionAdorner.cs" />
+    <Compile Include="Files\StaticFileItemViewModel.cs" />
+    <Compile Include="Icons\CSIDL.cs" />
     <Compile Include="Icons\FileIconService.cs" />
     <Compile Include="Icons\IconCache.cs" />
     <Compile Include="Icons\IImageable.cs" />
@@ -99,8 +104,10 @@
     <Compile Include="Utils\Maths.cs" />
     <Compile Include="ViewModels\FileExplorerViewModel.cs" />
     <Compile Include="ViewModels\HistoryViewModel.cs" />
+    <Compile Include="ViewModels\MainViewModel.cs" />
+    <Page Include="Controls\ControlStyles.xaml" />
     <Page Include="Exploring\FileExplorerStyles.xaml" />
-    <Page Include="Files\FileItemStyles.xaml" />
+    <Page Include="Files\Controls\FileItemStyles.xaml" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -125,6 +132,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Themes\GlobalConverters.xaml" />
     <Page Include="Themes\LightTheme.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -172,6 +180,5 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

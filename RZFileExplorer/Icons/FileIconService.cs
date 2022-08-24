@@ -16,44 +16,6 @@ using RZFileExplorer.Files.Controls;
 
 namespace RZFileExplorer.Icons {
     public class FileIconService {
-        private readonly struct QueuedIconResolution {
-            public readonly string path;
-            public readonly IImageable imageable;
-            public readonly IconType iconType;
-
-            public QueuedIconResolution(string path, IImageable imageable, IconType iconType) {
-                this.path = path;
-                this.imageable = imageable;
-                this.iconType = iconType;
-            }
-        }
-
-        private readonly struct PendingIconDelivery {
-            public readonly IImageable imageable;
-            public readonly string path;
-            public readonly ImageSource image;
-
-            public PendingIconDelivery(string path, IImageable imageable, ImageSource image) {
-                this.path = path;
-                this.imageable = imageable;
-                this.image = image;
-            }
-
-            public void SetImage() {
-                this.imageable.ImageSource = this.image;
-            }
-        }
-
-        public static FileIconService Instance { get; } = new FileIconService();
-
-        private readonly Thread fileThread;
-        private readonly Thread directoryThread;
-        private readonly ConcurrentQueue<QueuedIconResolution> fileQueue;
-        private readonly ConcurrentQueue<QueuedIconResolution> directoryQueue;
-        private readonly ConcurrentQueue<PendingIconDelivery> updateQueue;
-
-        private readonly IconCache cache;
-
         private volatile bool canFileThreadRun;
         public bool CanFileThreadRun {
             get => this.canFileThreadRun;
@@ -72,6 +34,17 @@ namespace RZFileExplorer.Icons {
             set => this.canUpdateTaskRun = value;
         }
 
+        public static FileIconService Instance { get; } = new FileIconService();
+
+        private readonly Thread fileThread;
+        private readonly Thread directoryThread;
+        private readonly Thread updateThread;
+        private readonly ConcurrentQueue<QueuedIconResolution> fileQueue;
+        private readonly ConcurrentQueue<QueuedIconResolution> directoryQueue;
+        private readonly ConcurrentQueue<PendingIconDelivery> updateQueue;
+
+        private readonly IconCache cache;
+
         public FileIconService() {
             this.fileQueue = new ConcurrentQueue<QueuedIconResolution>();
             this.directoryQueue = new ConcurrentQueue<QueuedIconResolution>();
@@ -84,41 +57,43 @@ namespace RZFileExplorer.Icons {
 
             this.fileThread = new Thread(this.FileQueueThreadMain);
             this.directoryThread = new Thread(this.DirectoryQueueThreadMain);
+            this.updateThread = new Thread(this.UpdateMain);
 
             this.fileThread.Start();
             this.directoryThread.Start();
-
-            Task.Run(async () => {
-                while (this.canUpdateTaskRun) {
-                    int size = Math.Min(this.updateQueue.Count, 20);
-                    if (size > 0) {
-                        Application.Current.Dispatcher.Invoke(() => {
-                            for (int i = 0; i < size; i++) {
-                                if (this.updateQueue.TryDequeue(out PendingIconDelivery pair)) {
-                                    pair.SetImage();
-                                    this.cache.PutImage(pair.path, pair.image);
-                                }
-                                else {
-                                    break;
-                                }
-                            }
-                        });
-                    }
-
-                    await Task.Delay(50);
-                }
-            });
+            this.updateThread.Start();
 
             Task.Run(async () => {
                 while (this.canUpdateTaskRun) {
                     this.cache.Tick();
-                    await Task.Delay(500);
+                    await Task.Delay(1000);
                 }
             });
         }
 
         public static void Init() {
 
+        }
+
+        private void UpdateMain() {
+            while (this.canUpdateTaskRun) {
+                int size = Math.Min(this.updateQueue.Count, 20);
+                if (size > 0) {
+                    Application.Current.Dispatcher.Invoke(() => {
+                        for (int i = 0; i < size; i++) {
+                            if (this.updateQueue.TryDequeue(out PendingIconDelivery pair)) {
+                                pair.SetImage();
+                                this.cache.PutImage(pair.path, pair.image);
+                            }
+                            else {
+                                break;
+                            }
+                        }
+                    });
+                }
+
+                Thread.Sleep(25);
+            }
         }
 
         private void FileQueueThreadMain() {
@@ -152,7 +127,7 @@ namespace RZFileExplorer.Icons {
                                 if (Directory.Exists(path)) {
                                     BitmapSource source;
                                     if (control.iconType == IconType.Large) {
-                                        source = ShellEx.icon_of_path_large(path, false, true);
+                                        source = ShellEx.GetBitmapSourceForPath(path, false, true);
                                     }
                                     else {
                                         source = ShellUtils.GetFileIconAsBitmapSource(path, control.iconType, true);
@@ -188,6 +163,34 @@ namespace RZFileExplorer.Icons {
                 else if (Directory.Exists(path)) {
                     this.directoryQueue.Enqueue(new QueuedIconResolution(path, control, iconType));
                 }
+            }
+        }
+
+        private readonly struct QueuedIconResolution {
+            public readonly string path;
+            public readonly IImageable imageable;
+            public readonly IconType iconType;
+
+            public QueuedIconResolution(string path, IImageable imageable, IconType iconType) {
+                this.path = path;
+                this.imageable = imageable;
+                this.iconType = iconType;
+            }
+        }
+
+        private readonly struct PendingIconDelivery {
+            public readonly IImageable imageable;
+            public readonly string path;
+            public readonly ImageSource image;
+
+            public PendingIconDelivery(string path, IImageable imageable, ImageSource image) {
+                this.path = path;
+                this.imageable = imageable;
+                this.image = image;
+            }
+
+            public void SetImage() {
+                this.imageable.Source = this.image;
             }
         }
     }

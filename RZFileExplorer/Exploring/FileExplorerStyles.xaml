@@ -6,21 +6,9 @@
                     xmlns:exploring="clr-namespace:RZFileExplorer.Exploring"
                     xmlns:files="clr-namespace:RZFileExplorer.Files"
                     xmlns:controls="clr-namespace:RZFileExplorer.Files.Controls"
-                    xmlns:converters="clr-namespace:RZFileExplorer.Converters"
                     xmlns:fileSizes="clr-namespace:RZFileExplorer.Files.FileSizes"
-                    xmlns:viewModels="clr-namespace:RZFileExplorer.ViewModels">
-    <converters:FileTypeConverter x:Key="FileTypeConverter"/>
-    <converters:FilePathToIconConverter x:Key="FilePathIconConverter"/>
-    <converters:DirectoryFileSizeConverter x:Key="DirectorySizeConverter"/>
-    <converters:FileSizeConverter x:Key="FileSizeConverter"/>
-
-    <converters:ConverterChain x:Key="DirectoryFileSizeConverter">
-        <converters:ConverterChain.Converters>
-            <StaticResource ResourceKey="DirectorySizeConverter"/>
-            <StaticResource ResourceKey="FileSizeConverter"/>
-        </converters:ConverterChain.Converters>
-    </converters:ConverterChain>
-
+                    xmlns:viewModels="clr-namespace:RZFileExplorer.ViewModels"
+                    xmlns:controls1="clr-namespace:RZFileExplorer.Controls">
     <Style x:Key="FileExplorerListViewItem" TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource {x:Type ListViewItem}}">
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
     </Style>
@@ -38,13 +26,13 @@
                             </ListBox.ItemsPanel>
                             <ListBox.Resources>
                                 <DataTemplate DataType="{x:Type files:DriveItemViewModel}">
-                                    <controls:DriveItemControl DataContext="{Binding}" Padding="2"/>
+                                    <controls:DriveWrapItemControl DataContext="{Binding}" Padding="2"/>
                                 </DataTemplate>
                                 <DataTemplate DataType="{x:Type files:DirectoryItemViewModel}">
-                                    <controls:DirectoryItemControl DataContext="{Binding}"/>
+                                    <controls:DirectoryWrapItemControl DataContext="{Binding}"/>
                                 </DataTemplate>
                                 <DataTemplate DataType="{x:Type files:FileItemViewModel}">
-                                    <controls:FileItemControl DataContext="{Binding}"/>
+                                    <controls:FileWrapItemControl DataContext="{Binding}"/>
                                 </DataTemplate>
                             </ListBox.Resources>
                         </ListBox>
@@ -65,11 +53,11 @@
                                         <GridViewColumn Header="File Name" Width="400">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <controls:IconTextPairControl d:DataContext="{d:DesignInstance files:FileItemViewModel}" Text="{Binding FileName, Mode=OneTime}" TargetFilePath="{Binding FilePath}" HorizontalAlignment="Stretch" Background="Transparent">
-                                                        <controls:IconTextPairControl.InputBindings>
+                                                    <controls1:IconTextPairControl d:DataContext="{d:DesignInstance files:FileItemViewModel}" Text="{Binding FileName, Mode=OneTime}" TargetFilePath="{Binding FilePath}" HorizontalAlignment="Stretch" Background="Transparent">
+                                                        <controls1:IconTextPairControl.InputBindings>
                                                             <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding NavigateCommand}"/>
-                                                        </controls:IconTextPairControl.InputBindings>
-                                                    </controls:IconTextPairControl>
+                                                        </controls1:IconTextPairControl.InputBindings>
+                                                    </controls1:IconTextPairControl>
                                                 </DataTemplate>
                                             </GridViewColumn.CellTemplate>
                                         </GridViewColumn>
@@ -89,7 +77,7 @@
                                                                 <TextBlock FontFamily="Consolas" Text="{Binding FileSize, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource FileSizeConverter}}" TextAlignment="Right" HorizontalAlignment="Right"/>
                                                             </DataTemplate>
                                                             <DataTemplate DataType="{x:Type files:DirectoryItemViewModel}">
-                                                                <fileSizes:DirectorySizeCalculatorControl DataContext="{Binding}"/>
+                                                                <fileSizes:DirectorySizeControl DataContext="{Binding}"/>
                                                             </DataTemplate>
                                                         </ContentPresenter.Resources>
                                                     </ContentPresenter>

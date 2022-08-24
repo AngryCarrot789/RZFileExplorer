@@ -9,12 +9,13 @@
         xmlns:controls="clr-namespace:RZFileExplorer.Files.Controls"
         xmlns:files="clr-namespace:RZFileExplorer.Files"
         xmlns:exploring="clr-namespace:RZFileExplorer.Exploring"
+        xmlns:quickAccessing="clr-namespace:RZFileExplorer.Files.QuickAccessing"
         Title="MainWindow" Height="700" Width="1240"
-        d:DataContext="{d:DesignInstance viewModels:FileExplorerViewModel}"
+        d:DataContext="{d:DesignInstance viewModels:MainViewModel}"
         Style="{DynamicResource CustomWindowStyle}" 
         Background="{DynamicResource AREghZyBrush.Primary.1.Background.Static}" BorderBrush="{DynamicResource AREghZyBrush.Primary.1.Border.Static}">
     <Window.InputBindings>
-        <MouseBinding MouseAction="MiddleClick"/>
+        <KeyBinding Key="F5" Command="{Binding FileExplorer.RefreshCommand}"/>
     </Window.InputBindings>
     <Grid>
         <Grid Height="100" VerticalAlignment="Top">
@@ -27,22 +28,27 @@
                     <ColumnDefinition Width="4"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Grid Height="23" VerticalAlignment="Top" Margin="3,3,3,0" Grid.ColumnSpan="3">
+                <Grid DataContext="{Binding FileExplorer}" Height="23" VerticalAlignment="Top" Margin="3,3,3,0" Grid.ColumnSpan="3">
                     <Button Command="{Binding History.GoBackCommand}" Content="←" HorizontalAlignment="Left" Width="25"/>
                     <Button Command="{Binding History.GoForwardCommand}" Content="→" HorizontalAlignment="Left" Width="25" Margin="29,0,0,0"/>
-                    <TextBox Text="{Binding InputPath, UpdateSourceTrigger=PropertyChanged}" Padding="2" VerticalContentAlignment="Center" Margin="58,0,0,0" Background="{DynamicResource AREghZyBrush.Deep.2.Background.Static}">
+                    <TextBox Text="{Binding InputPath, UpdateSourceTrigger=PropertyChanged}" Padding="2" VerticalContentAlignment="Center" Margin="58,0,60,0" Background="{DynamicResource AREghZyBrush.Deep.2.Background.Static}">
                         <TextBox.InputBindings>
-                            <KeyBinding Key="Enter" Command="{Binding NavigateToInputCommand}"/>
+                            <KeyBinding Key="Enter" Command="{Binding NavigateToTopInputCommand}"/>
                         </TextBox.InputBindings>
                     </TextBox>
+                    <Button Command="{Binding RefreshCommand}" Content="Refresh" HorizontalAlignment="Right" Width="56"/>
                 </Grid>
                 <Grid Margin="0,29,0,0">
-                    <ListBox BorderThickness="0 1 1 0" BorderBrush="{DynamicResource AREghZyBrush.Primary.1.Border.Static}" Background="{DynamicResource AREghZyBrush.Deep.3.Background.Static}">
-                        
+                    <ListBox DataContext="{Binding QuickAccess}" ItemsSource="{Binding QuickAccessList}" SelectedItem="{Binding SelectedItem, UpdateSourceTrigger=PropertyChanged}" BorderThickness="0 1 1 0" BorderBrush="{DynamicResource AREghZyBrush.Primary.1.Border.Static}" Background="{DynamicResource AREghZyBrush.Deep.3.Background.Static}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <quickAccessing:QuickAccessItemControl DataContext="{Binding}"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
                     </ListBox>
                 </Grid>
                 <Grid Margin="0,29,0,0" Grid.Column="2">
-                    <exploring:FileExplorerControl BorderThickness="1 1 0 0" ItemsSource="{Binding Files}" ExplorerMode="{Binding ExplorerMode, UpdateSourceTrigger=PropertyChanged}" Background="{DynamicResource AREghZyBrush.Deep.2.Background.Static}"/>
+                    <exploring:FileExplorerControl DataContext="{Binding FileExplorer}" BorderThickness="1 1 0 0" ItemsSource="{Binding Files}" ExplorerMode="{Binding ExplorerMode, UpdateSourceTrigger=PropertyChanged}" Background="{DynamicResource AREghZyBrush.Deep.2.Background.Static}"/>
                 </Grid>
                 <GridSplitter VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Column="1" Background="Transparent" Margin="0,29,0,0"/>
             </Grid>

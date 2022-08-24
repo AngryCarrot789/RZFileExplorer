@@ -1,13 +1,14 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using RZFileExplorer.Files;
 using RZFileExplorer.Icons;
 
-namespace RZFileExplorer.Files.Controls {
+namespace RZFileExplorer.Controls {
     public class IconTextPairControl : Control, IImageable {
-        public static readonly DependencyProperty ImageSourceProperty =
+        public static readonly DependencyProperty SourceProperty =
             DependencyProperty.Register(
-                "ImageSource",
+                "Source",
                 typeof(ImageSource),
                 typeof(IconTextPairControl),
                 new PropertyMetadata(null));
@@ -47,9 +48,9 @@ namespace RZFileExplorer.Files.Controls {
             set => SetValue(TargetFilePathProperty, value);
         }
 
-        public ImageSource ImageSource {
-            get => (ImageSource) GetValue(ImageSourceProperty);
-            set => SetValue(ImageSourceProperty, value);
+        public ImageSource Source {
+            get => (ImageSource) GetValue(SourceProperty);
+            set => SetValue(SourceProperty, value);
         }
 
         public string Text {
@@ -57,15 +58,15 @@ namespace RZFileExplorer.Files.Controls {
             set => SetValue(TextProperty, value);
         }
 
-        private bool queuedLoadForXamlLoad;
+        private bool triggerUpdateOnLoad;
 
         public IconTextPairControl() {
-            Loaded += OnLoaded;
+            this.Loaded += OnLoaded;
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e) {
-            if (this.queuedLoadForXamlLoad) {
-                this.queuedLoadForXamlLoad = false;
+            if (this.triggerUpdateOnLoad) {
+                this.triggerUpdateOnLoad = false;
                 OnTargetFileChanged();
             }
         }
@@ -73,9 +74,10 @@ namespace RZFileExplorer.Files.Controls {
         public void OnTargetFileChanged() {
             if (this.IsLoaded) {
                 FileIconService.Instance.EnqueueForIconResolution(this.TargetFilePath, this, false, false, this.IconType);
+                this.triggerUpdateOnLoad = false;
             }
             else {
-                this.queuedLoadForXamlLoad = true;
+                this.triggerUpdateOnLoad = true;
             }
         }
     }

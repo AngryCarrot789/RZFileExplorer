@@ -23,7 +23,7 @@ namespace RZFileExplorer {
     public partial class MainWindow : Window {
         public MainWindow() {
             InitializeComponent();
-            this.DataContext = new FileExplorerViewModel();
+            this.DataContext = new MainViewModel();
             FileIconService.Init();
         }
 

@@ -77,11 +77,11 @@
     <SolidColorBrush x:Key="ListBox.Disabled.Background"      Color="{DynamicResource AREghZyColour.Primary.1.Background.Disabled}"/>
     <SolidColorBrush x:Key="ListBox.Disabled.Border"          Color="{DynamicResource AREghZyColour.Primary.1.Border.Disabled}"/>
     <SolidColorBrush x:Key="Item.MouseOver.Background"        Color="{DynamicResource AREghZyColour.Primary.2.Background.MouseOver}"/>
-    <SolidColorBrush x:Key="Item.MouseOver.Border"            Color="{DynamicResource AREghZyColour.Primary.2.Border.MouseOver}"/>
+    <SolidColorBrush x:Key="Item.MouseOver.Border"            Color="{DynamicResource AREghZyColour.Primary.3.Border.MouseOver}"/>
     <SolidColorBrush x:Key="Item.SelectedInactive.Background" Color="{DynamicResource AREghZyColour.Primary.2.Background.Selected.Inactive}"/>
-    <SolidColorBrush x:Key="Item.SelectedInactive.Border"     Color="{DynamicResource AREghZyColour.Primary.2.Border.Selected.Inactive}"/>
+    <SolidColorBrush x:Key="Item.SelectedInactive.Border"     Color="{DynamicResource AREghZyColour.Primary.3.Border.Selected.Inactive}"/>
     <SolidColorBrush x:Key="Item.SelectedActive.Background"   Color="{DynamicResource AREghZyColour.Primary.2.Background.Selected}"/>
-    <SolidColorBrush x:Key="Item.SelectedActive.Border"       Color="{DynamicResource AREghZyColour.Primary.2.Border.Selected}"/>
+    <SolidColorBrush x:Key="Item.SelectedActive.Border"       Color="{DynamicResource AREghZyColour.Primary.3.Border.Selected}"/>
 
     <SolidColorBrush x:Key="ListView.Static.Background"              Color="{DynamicResource AREghZyColour.Primary.1.Background.Static}"/>
     <SolidColorBrush x:Key="ListView.Static.Border"                  Color="{DynamicResource AREghZyColour.Primary.1.Border.Static}"/>

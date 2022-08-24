@@ -6,38 +6,15 @@
                     xmlns:controls="clr-namespace:RZFileExplorer.Files.Controls"
                     xmlns:fileSizes="clr-namespace:RZFileExplorer.Files.FileSizes"
                     xmlns:converters="clr-namespace:RZFileExplorer.Converters"
+                    xmlns:controls1="clr-namespace:RZFileExplorer.Controls"
+                    xmlns:quickAccessing="clr-namespace:RZFileExplorer.Files.QuickAccessing"
                     mc:Ignorable="d">
-
-    <converters:FileSizeConverter x:Key="FileSizeConverter"/>
-
-    <Style TargetType="{x:Type controls:IconTextPairControl}">
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="IconType" Value="Small"/>
-        <Setter Property="Template" d:DataContext="{d:DesignInstance files:BaseFileItemViewModel}">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type controls:IconTextPairControl}">
-                    <Grid HorizontalAlignment="Left" Height="16">
-                        <Image Source="{TemplateBinding ImageSource}" VerticalAlignment="Stretch" Width="18" HorizontalAlignment="Left"/>
-                        <Label VerticalAlignment="Stretch" VerticalContentAlignment="Center" Padding="2 0" Margin="23 0 0 0" HorizontalAlignment="Left">
-                            <TextBlock Text="{TemplateBinding Text}" VerticalAlignment="Center"/>
-                        </Label>
-                    </Grid>
-                    <ControlTemplate.Triggers>
-                        <DataTrigger Binding="{Binding IsHidden}" Value="True">
-                            <Setter Property="Opacity" Value="0.5"/>
-                        </DataTrigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
-    <Style TargetType="{x:Type fileSizes:DirectorySizeCalculatorControl}">
+    <Style TargetType="{x:Type fileSizes:DirectorySizeControl}">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Template" d:DataContext="{d:DesignInstance files:DirectoryItemViewModel}">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type fileSizes:DirectorySizeCalculatorControl}">
-                    <Grid>
+                <ControlTemplate TargetType="{x:Type fileSizes:DirectorySizeControl}">
+                    <Grid Background="{TemplateBinding Background}">
                         <Grid.InputBindings>
                             <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding PromptCalculateSizeCommand, Mode=OneTime}"/>
                         </Grid.InputBindings>
@@ -59,12 +36,12 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type controls:FileItemControl}">
+    <Style TargetType="{x:Type controls:FileWrapItemControl}">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type controls:FileItemControl}">
-                    <Grid d:DataContext="{d:DesignInstance files:FileItemViewModel}">
+                <ControlTemplate TargetType="{x:Type controls:FileWrapItemControl}">
+                    <Grid Background="{TemplateBinding Background}" d:DataContext="{d:DesignInstance files:FileItemViewModel}">
                         <TextBlock Text="{Binding FilePath, UpdateSourceTrigger=PropertyChanged}"/>
                     </Grid>
                 </ControlTemplate>
@@ -72,12 +49,28 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type controls:DirectoryItemControl}">
+    <Style TargetType="{x:Type quickAccessing:QuickAccessItemControl}">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type controls:DirectoryItemControl}">
-                    <Grid d:DataContext="{d:DesignInstance files:DirectoryItemViewModel}">
+                <ControlTemplate TargetType="{x:Type quickAccessing:QuickAccessItemControl}">
+                    <Grid d:DataContext="{d:DesignInstance quickAccessing:QuickAccessItemViewModel}" >
+                        <controls1:SystemIconImageControl SystemIconType="{Binding SystemIconType, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Stretch" Width="16" HorizontalAlignment="Left"/>
+                        <Label VerticalAlignment="Stretch" VerticalContentAlignment="Center" Padding="2 0" Margin="23 0 0 0" HorizontalAlignment="Left">
+                            <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center"/>
+                        </Label>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type controls:DirectoryWrapItemControl}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type controls:DirectoryWrapItemControl}">
+                    <Grid Background="{TemplateBinding Background}" d:DataContext="{d:DesignInstance files:DirectoryItemViewModel}">
                         <TextBlock Text="{Binding FilePath, UpdateSourceTrigger=PropertyChanged}"/>
                     </Grid>
                 </ControlTemplate>
@@ -85,13 +78,13 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type controls:DriveItemControl}">
+    <Style TargetType="{x:Type controls:DriveWrapItemControl}">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type controls:DriveItemControl}">
-                    <Grid Background="Transparent" d:DataContext="{d:DesignInstance files:DriveItemViewModel}" MinWidth="240" Height="50">
-                        <controls:FileIconImageControl IconType="Large" TargetFilePath="{Binding FilePath}" Height="50" Width="50" HorizontalAlignment="Left"/>
+                <ControlTemplate TargetType="{x:Type controls:DriveWrapItemControl}">
+                    <Grid Background="{TemplateBinding Background}" d:DataContext="{d:DesignInstance files:DriveItemViewModel}" MinWidth="240" Height="50">
+                        <controls1:FileIconImageControl IconType="Large" TargetFilePath="{Binding FilePath}" Height="50" Width="50" HorizontalAlignment="Left"/>
                         <StackPanel Margin="50 0 0 0">
                             <TextBlock Text="{Binding FilePath, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" HorizontalAlignment="Left" Padding="2"/>
                             <ProgressBar Minimum="0" Maximum="{Binding TotalSpace, UpdateSourceTrigger=PropertyChanged}" Value="{Binding UsedSpace, UpdateSourceTrigger=PropertyChanged}" Height="12"/>
