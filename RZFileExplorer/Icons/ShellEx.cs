@@ -9,6 +9,8 @@ using System.Security;
 using System.Windows.Media.Imaging;
 
 namespace RZFileExplorer.Icons {
+    // Main credits:
+    // https://www.c-sharpcorner.com/forums/getting-folders-icon-imageunable-to-take-large-icons
     public static class ShellEx {
         // Constants that we need in the function call
 
@@ -237,7 +239,7 @@ namespace RZFileExplorer.Icons {
                 System.Windows.Int32Rect.Empty,
                 BitmapSizeOptions.FromEmptyOptions());
             ic2.Freeze();
-            return (BitmapSource) ic2;
+            return ic2;
         }
 
         public static BitmapSource GetBitmapSourceForSystemIcon(bool small, CSIDL csidl) {
@@ -245,6 +247,9 @@ namespace RZFileExplorer.Icons {
             IntPtr pidlTrash = IntPtr.Zero;
             int hr = SHGetSpecialFolderLocation(IntPtr.Zero, (int) csidl, ref pidlTrash);
             if (hr != 0) {
+                // most likely invalid CSIDL; unsupported icon maybe?
+                // i put [broken; invalid] infront of the enum entries that
+                // cause an exception to be thrown
                 throw new Win32Exception(hr);
             }
 

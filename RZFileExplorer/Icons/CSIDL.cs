@@ -1,6 +1,7 @@
 namespace RZFileExplorer.Icons {
     public enum CSIDL {
-        // anything with a question mark uses the default folder icon, and is therefore "dodgy" and not useful
+        // anything with a ? uses the default folder icon, and is therefore "dodgy" and not useful
+        // anything with [broken; invalid] will cause the GetBitmapSourceForSystemIcon function to fail
         CSIDL_ADMINTOOLS              = 0x0030, // ?
         CSIDL_ALTSTARTUP              = 0x001d, // ?
         CSIDL_APPDATA                 = 0x001a, // ?

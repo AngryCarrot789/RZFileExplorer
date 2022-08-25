@@ -17,11 +17,12 @@
     <Window.InputBindings>
         <KeyBinding Key="F5" Command="{Binding FileExplorer.RefreshCommand}"/>
     </Window.InputBindings>
-    <Grid>
-        <Grid Height="100" VerticalAlignment="Top">
-
+    <DockPanel>
+        <Grid Height="0" VerticalAlignment="Top" DockPanel.Dock="Top">
+            <Button IsEnabled="False" Content="Copy" Margin="10,10,1166,10"/>
+            <Button IsEnabled="False" Content="Paste" Margin="69,10,1107,10"/>
         </Grid>
-        <Border Margin="0,100,0,0" Background="{DynamicResource AREghZyBrush.Deep.3.Background.Static}" BorderBrush="{DynamicResource AREghZyBrush.Primary.1.Border.Static}" BorderThickness="0 1 0 0">
+        <Border Margin="0,0,0,0" Background="{DynamicResource AREghZyBrush.Deep.3.Background.Static}" BorderBrush="{DynamicResource AREghZyBrush.Primary.1.Border.Static}" BorderThickness="0 1 0 0">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="143"/>
@@ -75,5 +76,5 @@
             </ListBox.Resources>
         </ListBox>
         -->
-    </Grid>
+    </DockPanel>
 </Window>
